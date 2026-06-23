@@ -3,9 +3,8 @@ import re
 from typing import AsyncGenerator
 
 from backend.app.schemas import StreamMessage, PipelineStep, MessageType
+from backend.app.services.tools import web_search, scrape_url
 from backend.app.services.agents import (
-    build_search_agent,
-    build_reader_agent,
     writer_chain,
     critic_chain,
 )
@@ -64,12 +63,10 @@ async def run_async_research_pipeline(topic: str) -> AsyncGenerator[str, None]:
         )
 
         try:
-            search_agent = build_search_agent()
-            search_result = await asyncio.to_thread(
-                search_agent.invoke,
-                {"messages": [("user", f"Find recent, reliable and detailed information about: {topic}")]},
+            search_text = await asyncio.to_thread(
+                web_search.invoke,
+                topic
             )
-            search_text = _extract_message_text(search_result)
         except Exception as e:
             await asyncio.sleep(0)  # allow event loop to process
             yield _emit(PipelineStep.SEARCH, MessageType.ERROR, f"Search agent error: {e}")
@@ -106,21 +103,10 @@ async def run_async_research_pipeline(topic: str) -> AsyncGenerator[str, None]:
                 f"Scraping content from: {best_url}",
             )
             try:
-                reader_agent = build_reader_agent()
-                reader_result = await asyncio.to_thread(
-                    reader_agent.invoke,
-                    {
-                        "messages": [
-                            (
-                                "user",
-                                f"Based on the following search results about '{topic}', "
-                                f"pick the most relevant URL and scrape it for deeper content.\n\n"
-                                f"Search Results:\n{search_text[:800]}",
-                            )
-                        ]
-                    },
+                scraped_content = await asyncio.to_thread(
+                    scrape_url.invoke,
+                    best_url
                 )
-                scraped_content = _extract_message_text(reader_result)
                 yield _emit(
                     PipelineStep.SCRAPE, MessageType.LOG,
                     "Page content successfully scraped.",
