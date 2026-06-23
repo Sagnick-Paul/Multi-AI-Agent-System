@@ -1,5 +1,5 @@
 from langchain_mistralai import ChatMistralAI
-from langchain.agents import create_agent
+from langgraph.prebuilt import create_react_agent as create_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from backend.app.services.tools import web_search, scrape_url
