@@ -2,6 +2,9 @@
 
 An advanced collaborative multi-agent platform designed to automate deep research workflows. The system features collaborative LangChain agents performing real-time web search, content scraping, synthesis, and peer evaluation, with live console logs streamed directly to a responsive React dashboard.
 
+**🔗 Live Demo:** [https://multi-ai-agent-system-dashboard.onrender.com/](https://multi-ai-agent-system-dashboard.onrender.com/)
+
+
 ## 🔄 Agent Workflow
 
 The system utilizes specialized agents interacting in a pipeline, visualized below:
