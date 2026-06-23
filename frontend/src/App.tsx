@@ -122,7 +122,8 @@ export default function App() {
     setFinalFeedback('')
     setActiveTab('report')
 
-    const url = `http://localhost:8000/api/research/stream?topic=${encodeURIComponent(topic.trim())}`
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+    const url = `${backendUrl}/api/research/stream?topic=${encodeURIComponent(topic.trim())}`
     const es = new EventSource(url)
     eventSourceRef.current = es
 
